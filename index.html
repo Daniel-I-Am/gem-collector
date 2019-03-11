@@ -20,6 +20,10 @@
             <button type="submit" class="btn btn-primary">Submit</button>
             <button type="button" class="btn btn-primary" onclick="addInputField(this.parentNode)">Add field</button>
         </form>
+        <div class="form-group blue-border">
+            <label for="outputTextArea">Output</label>
+            <textarea class="form-control" id="outputTextArea" rows="10" readonly></textarea>
+        </div>
     </div>
 </body>
 <script>
@@ -43,7 +47,6 @@
             const json = await response.json();
             uuids[uuids.length] = json['id'];
         }
-        console.log(uuids);
         return uuids;
     }
 
@@ -72,9 +75,30 @@
         return params;
     }
 
+    function uuid(shortUUID) {
+        r = /([0-9abcdef]{8})([0-9abcdef]{4})([0-9abcdef]{4})([0-9abcdef]{4})([0-9abcdef]{12})/gi;
+        return shortUUID.replace(r, '$1-$2-$3-$4-$5');
+    }
+
     var params = getSearchParameters();
 
-    (async function () { console.log(await fetchNames(parseParams(params))) })()
+    (async function () {
+        uuids = await fetchNames(parseParams(params));
+        if (uuids.length <= 0) return;
+
+        textarea = document.getElementById("outputTextArea");
+        textarea.value = "summon villager ~ ~ ~ {Silent:1b,Invulnerable:1b,CustomNameVisible:1b,CanPickUpLoot:0b,Profession:5,Career:1,CareerLevel:1,Willing:0b,CustomName:\"{\\\"text\\\":\\\"Gem Collector\\\",\\\"color\\\":\\\"gold\\\"}\",ArmorItems:[{},{},{},{id:\"minecraft:player_head\",Count:1b,tag:{";
+        textarea.value += `SkullOwner:{Id:\"99b222b4-9770-4154-8589-bae30d73b68d\",Properties:{textures:[{Value:\"${btoa("{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/e0cf8caeb5b8961888bd86fa983694bf151f9a3e5575cdd04090631fee50bcc6\"}}}")}\"}]}}`;
+        textarea.value += "}}],Attributes:[{Name:generic.knockbackResistance,Base:1.0},{Name:generic.movementSpeed,Base:0.0}],Offers:{Recipes:[";
+        uuids.forEach(async (e, i) => {
+            if (i > 0) textarea.value += ","
+            texture = (await (await fetch(`https://cors-anywhere.herokuapp.com/https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`)).json())['properties'][0]['value'];
+            console.log(atob(texture));
+            textarea.value += `{rewardExp:0b,maxUses:2147483647,buy:{id:\"minecraft:player_head\",Count:1b,tag:{display:{Name:\"{\\\"text\\\":\\\"§r§eAquamarine Gem\\\"}\"},SkullOwner:{Id:\"${uuid(e)}\",Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzMxOGJiOGI2MjEwMzkxMzZlNDU5YWQ0NjdiOWI5ZjA0NjkzNjdkMjE2ZjU1M2RkNDRkYTNkMjNmYTU4ZjQyZiJ9fX0=\"}]}}}},sell:{id:\"minecraft:player_head\",Count:3b}}`;
+
+        });
+        textarea.value += "]}}";
+    })();
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
