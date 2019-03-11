@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gem Collector</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="Username1">Username</label>
+                <input type="text" class="form-control" id="Username1" placeholder="Username">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-primary" onclick="addInputField(this.parentNode)">Add field</button>
+        </form>
+    </div>
+</body>
+<script>
+    let count = 2;
+    function addInputField(form) {
+        c = document.createElement('div');
+        c.className = 'form-group';
+        c.innerHTML = `<label for="Username${count}">Username</label><input type="text" class="form-control" id="Username${count}" placeholder="Username">`
+        form.insertBefore(c, form.children[form.children.length - 2]);
+        count++;
+    }
+</script>
+<script>
+    const fetchNames = async function (getParams) {
+        uuids = [];
+
+        for (let index = 0; index < getParams.length; index++) {
+            const response = await fetch(
+                `https://api.mojang.com/users/profiles/minecraft/${getParams[index]}`,
+                {
+                    method: "GET", // *GET, POST, PUT, DELETE, etc.
+                    mode: "no-cors", // no-cors, cors, *same-origin
+                    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: "omit", // include, *same-origin, omit
+                    redirect: "follow", // manual, *follow, error
+                    referrer: "client", // no-referrer, *client
+                }
+            );
+            const json = await response.json();
+            uuids[uuids.length] = json['id'];
+        }
+        console.log(uuids);
+        return uuids;
+    }
+
+    function getSearchParameters() {
+        var prmstr = window.location.search.substr(1);
+        return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+    }
+
+    function transformToAssocArray(prmstr) {
+        var params = {};
+        var prmarr = prmstr.split("&");
+        for (var i = 0; i < prmarr.length; i++) {
+            var tmparr = prmarr[i].split("=");
+            params[tmparr[0]] = tmparr[1];
+        }
+        return params;
+    }
+
+    function parseParams(getParams) {
+        let params = [];
+        let i = 1;
+        while (getParams[`Username${i}`] != undefined) {
+            params[params.length] = getParams[`Username${i}`];
+            i++;
+        }
+        return params;
+    }
+
+    var params = getSearchParameters();
+
+    (async function () { console.log(await fetchNames(parseParams(params))) })()
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+</html>
