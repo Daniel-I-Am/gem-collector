@@ -15,7 +15,7 @@
         <form>
             <div class="form-group">
                 <label for="Username1">Username</label>
-                <input type="text" class="form-control" id="Username1" placeholder="Username">
+                <input type="text" class="form-control" id="Username1" name="Username1" placeholder="Username">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
             <button type="button" class="btn btn-primary" onclick="addInputField(this.parentNode)">Add field</button>
@@ -27,7 +27,7 @@
     function addInputField(form) {
         c = document.createElement('div');
         c.className = 'form-group';
-        c.innerHTML = `<label for="Username${count}">Username</label><input type="text" class="form-control" id="Username${count}" placeholder="Username">`
+        c.innerHTML = `<label for="Username${count}">Username</label><input type="text" class="form-control" id="Username${count}" name="Username${count}" placeholder="Username">`
         form.insertBefore(c, form.children[form.children.length - 2]);
         count++;
     }
